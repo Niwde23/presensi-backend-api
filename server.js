@@ -1,18 +1,21 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-require("./config/db"); // 👈 Tambahkan baris ini agar database terkoneksi!
+require("./config/db");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-// Import Routes (Kita akan buat file-nya setelah ini)
-const authRoutes = require("./routes/authRoutes");
+// + Agar foto di dalam folder 'uploads' bisa diakses publik (seperti url gambar)
+app.use("/uploads", express.static("uploads"));
 
-// Daftarkan Routes
+const authRoutes = require("./routes/authRoutes");
+const attendanceRoutes = require("./routes/attendanceRoutes"); // + Import routes presensi
+
 app.use("/api/auth", authRoutes);
+app.use("/api/attendance", attendanceRoutes); // + Daftarkan rute presensi
 
 app.get("/", (req, res) => {
   res.json({ message: "API Sistem Presensi Berjalan Lancar!" });
