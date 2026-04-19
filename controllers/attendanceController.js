@@ -97,7 +97,7 @@ exports.checkInQR = async (req, res) => {
   // Ini adalah "Kata Sandi" rahasia QR Code kantor kamu
   const VALID_OFFICE_QR = "PRESENSI_KANTOR_2026";
 
-  if (qr_data !== VALID_OFFICE_QR) {
+  if (!qr_data || qr_data.trim() !== VALID_OFFICE_QR) {
     return res.status(400).json({ success: false, message: "QR Code tidak valid atau bukan milik kantor!" });
   }
 
