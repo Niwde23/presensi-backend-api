@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
-const { checkIn, checkOut, getHistory } = require("../controllers/attendanceController");
+const { checkIn, checkOut, getHistory, checkInQR } = require("../controllers/attendanceController");
 const authMiddleware = require("../middlewares/authMiddleware");
 
 // Konfigurasi Multer untuk menyimpan foto ke folder 'uploads'
@@ -19,5 +19,6 @@ const upload = multer({ storage: storage });
 router.post("/checkin", authMiddleware, upload.single("photo"), checkIn);
 router.post("/checkout", authMiddleware, checkOut);
 router.get("/history", authMiddleware, getHistory);
+router.post("/checkin-qr", authMiddleware, checkInQR);
 
 module.exports = router;

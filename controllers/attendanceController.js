@@ -88,3 +88,34 @@ exports.getHistory = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+// 4. CHECK-IN VIA QR CODE
+exports.checkInQR = async (req, res) => {
+  const { qr_data } = req.body;
+  const userId = req.user.id;
+
+  // Ini adalah "Kata Sandi" rahasia QR Code kantor kamu
+  const VALID_OFFICE_QR = "PRESENSI_KANTOR_2026";
+
+  if (qr_data !== VALID_OFFICE_QR) {
+    return res.status(400).json({ success: false, message: "QR Code tidak valid atau bukan milik kantor!" });
+  }
+
+  try {
+    // Cek apakah hari ini sudah absen masuk
+    const today = new Date().toISOString().split("T")[0];
+    const cekAbsen = await pool.query("SELECT * FROM attendance WHERE user_id = $1 AND DATE(check_in) = $2", [userId, today]);
+
+    if (cekAbsen.rows.length > 0) {
+      return res.status(400).json({ success: false, message: "Anda sudah Check-In hari ini!" });
+    }
+
+    // Simpan ke database (karena via QR, lat/long dan foto kita buat NULL/kosong)
+    const result = await pool.query("INSERT INTO attendance (user_id, check_in, lat, long, photo_url) VALUES ($1, NOW(), NULL, NULL, 'ABSEN_VIA_QR') RETURNING *", [userId]);
+
+    res.status(201).json({ success: true, message: "Check-In via QR berhasil!", data: result.rows[0] });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
