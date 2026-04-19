@@ -12,10 +12,12 @@ app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
 const authRoutes = require("./routes/authRoutes");
-const attendanceRoutes = require("./routes/attendanceRoutes"); // + Import routes presensi
+const attendanceRoutes = require("./routes/attendanceRoutes");
+const leaveRoutes = require("./routes/leaveRoutes");
 
 app.use("/api/auth", authRoutes);
-app.use("/api/attendance", attendanceRoutes); // + Daftarkan rute presensi
+app.use("/api/attendance", attendanceRoutes);
+app.use("/api/leave", leaveRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "API Sistem Presensi Berjalan Lancar!" });

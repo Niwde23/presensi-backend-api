@@ -2,8 +2,8 @@ const pool = require("../config/db");
 
 // Koordinat Pusat Kantor (Contoh: Monas, Jakarta)
 // Nanti bisa kamu ganti dengan koordinat kampus atau tempat lain
-const OFFICE_LAT = -6.1753924;
-const OFFICE_LONG = 106.8271528;
+const OFFICE_LAT = -6.3426606;
+const OFFICE_LONG = 106.6850413;
 const MAX_RADIUS = 50; // Jarak maksimal dalam meter (misal: 50 meter)
 
 // Fungsi menghitung jarak GPS (Rumus Haversine)
@@ -71,5 +71,20 @@ exports.checkOut = async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+// 3. RIWAYAT PRESENSI
+exports.getHistory = async (req, res) => {
+  const userId = req.user.id; // Ambil ID dari token JWT
+
+  try {
+    // Ambil data presensi, urutkan dari yang terbaru (DESC)
+    const result = await pool.query("SELECT check_in, check_out, lat, long, photo_url FROM attendance WHERE user_id = $1 ORDER BY check_in DESC", [userId]);
+
+    res.json({ success: true, data: result.rows });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
